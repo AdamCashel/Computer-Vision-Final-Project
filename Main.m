@@ -27,20 +27,41 @@ end
 
 
 
-
-
-face_vertical = 100;
-face_horizontal = 100;
-
-
 % choosing a set of random weak classifiers
 number = 1000;
+face_vertical = 100;
+face_horizontal = 100;
 weak_classifiers = cell(1, number);
 for i = 1:number
     weak_classifiers{i} = generate_classifier(face_vertical, face_horizontal);
 end
 
 % save classifiers1000 weak_classifiers
+
+%Get face_integrals
+face_integrals = zeros(100,100,3047);
+
+for i = 1:3047
+    face_intergrals(:,:,i) = integral_image(faces(:,:,i));
+    
+end
+
+%Get nonface_integrals
+nonface_integrals = zeros(100,100,3047);
+
+for i = 1:3047
+    nonface_intergrals(:,:,i) = integral_image(faces(:,:,i));
+    
+end
+
+
+
+
+face_vertical = 100;
+face_horizontal = 100;
+
+
+
 
 %%
 
@@ -86,8 +107,8 @@ boosted_classifier = AdaBoost(responses, labels, 25);
 % a face. Values farther away from zero means the classifier is more
 % confident about its prediction, either positive or negative.
 
-prediction = boosted_predict(faces(:, :, 200), boosted_classifier, weak_classifiers, 15)
+prediction = boosted_predict(faces(:, :, 200), boosted_classifier, weak_classifiers, 25)
 
-prediction = boosted_predict(nonfaces(:, :, 500), boosted_classifier, weak_classifiers, 15)
+prediction = boosted_predict(nonfaces(:, :, 500), boosted_classifier, weak_classifiers, 25)
 
 
