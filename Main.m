@@ -1,3 +1,5 @@
+clear;
+%Gettting training_faces into matrix
 Location = 'C:\Users\adamc\OneDrive\Desktop\Final Computer Vision Project\Computer-Vision-Final-Project\training_test_data\training_faces\*bmp';
 ds = imageDatastore(Location);
 length = 3047; %Number of pictures in training_faces
@@ -6,6 +8,19 @@ counter = 1;
 while hasdata(ds)
     tempImage = read(ds);
     faces(:,:,counter) = tempImage;
+    
+    counter = counter + 1;
+end
+
+%Gettting training_nonfaces into matrix
+Location = 'C:\Users\adamc\OneDrive\Desktop\Final Computer Vision Project\Computer-Vision-Final-Project\training_test_data\training_faces\*bmp';
+ds2 = imageDatastore(Location);
+length = 3047; %Number of pictures in training_faces
+nonfaces = zeros(100,100,length);
+counter = 1;
+while hasdata(ds2)
+    tempImage = read(ds2);
+    nonfaces(:,:,counter) = tempImage;
     
     counter = counter + 1;
 end
@@ -36,7 +51,6 @@ end
 %load classifiers1000;
 
 %load training faces and nonfaces
-
 
 example_number = size(faces, 3) + size(nonfaces, 3);
 labels = zeros(example_number, 1);
