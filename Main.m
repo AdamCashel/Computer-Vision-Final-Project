@@ -7,6 +7,7 @@ faces = zeros(100,100,length);
 counter = 1;
 while hasdata(ds)
     tempImage = read(ds);
+    tempImage = mat2gray(tempImage);
     faces(:,:,counter) = tempImage;
     
     counter = counter + 1;
@@ -20,6 +21,7 @@ nonfaces = zeros(100,100,length);
 counter = 1;
 while hasdata(ds2)
     tempImage = read(ds2);
+    tempImage = mat2gray(tempImage);
     tempImage = tempImage(1:100,1:100);
     nonfaces(:,:,counter) = tempImage;
     
@@ -43,15 +45,15 @@ end
 face_integrals = zeros(100,100,3047);
 
 for i = 1:3047
-    %face_intergrals(:,:,i) = integral_image(faces(:,:,i));
-    face_intergrals(:,:,i) = integralImage(faces(:,:,i));
+    face_integrals(:,:,i) = integral_image(faces(:,:,i));
+    
 end
 
 %Get nonface_integrals
 nonface_integrals = zeros(100,100,3047);
 
 for i = 1:3047
-    nonface_intergrals(:,:,i) = integral_image(faces(:,:,i));
+    nonface_integrals(:,:,i) = integral_image(nonfaces(:,:,i));
      
 end
 
