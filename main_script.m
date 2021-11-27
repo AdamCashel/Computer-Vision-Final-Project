@@ -1,25 +1,4 @@
-%%
 
-% The addpath and cd lines are the only lines in the code that you may have
-% to change, in order to make the rest of the code work. Adjust
-% the paths to reflect the locations where you have stored the code 
-% and data in your computer.
-
-restoredefaultpath;
-clear all;
-close all;
-
-% Replace this path with your cs4379c-fall2021 git repository path in your system.
-repo_path = 'C:\Users\vangelis\Files\Academia\Teaching\TxState\CS4379C-Fall2021\Git\cs4379c-fall2021';
-
-s = filesep; % This gets the file separator character from the  system
-
-addpath([repo_path s 'Code' s '00_common' s '00_detection'])
-addpath([repo_path s 'Code' s '00_common' s '00_images'])
-addpath([repo_path s 'Code' s '00_common' s '00_utilities'])
-addpath([repo_path s 'Code' s '17_boosting'])
-addpath([repo_path s 'Data' s '00_common_data' s 'frgc2_b'])
-cd([repo_path s 'Data' s '00_common_data'])
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,7 +290,7 @@ end
 
 % see the precomputed response
 disp([a, b]);
-disp((a, b));
+%disp(a, b));
 disp(eval_weak_classifier(wc, integral));
 
 

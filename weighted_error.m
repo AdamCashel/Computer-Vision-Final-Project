@@ -15,7 +15,8 @@ function [best_error, best_threshold, best_alpha] = ...
 % The  function computes the best threshold for the given classifier, and
 % returns the threshold,  as well as the corresponding weighted error and
 % weight that should be assigned to that weak classifier.
-
+    
+    
 classifier_responses = [responses(classifier,:)]';
 minimum = min(classifier_responses);
 maximum = max(classifier_responses);
