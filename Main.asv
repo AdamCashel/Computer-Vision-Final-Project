@@ -1,13 +1,20 @@
 clear;
 %Gettting training_faces into matrix
 Location = 'C:\Users\adamc\OneDrive\Desktop\Final Computer Vision Project\Computer-Vision-Final-Project\training_test_data\training_faces\*bmp';
+current_face_size = 100;
+current_nonface_size = 100;
 ds = imageDatastore(Location);
 length = 3047; %Number of pictures in training_faces
-faces = zeros(100,100,length);
+faces = zeros(100,100,100); %Matrix to hold current training face pics
+total_facepics = zeros(100,100,length); % Matrix to hold all training face pics 
+total_nonfacepics = zeros(100,100,length); % Matrix to hold all training nonface pics 
 counter = 1;
+
 while hasdata(ds)
     tempImage = read(ds);
-    faces(:,:,counter) = tempImage;
+    tempImage = mat2gray(tempImage);
+    total_facepics(:,:,counter) = tempImage;
+    %faces(:,:,counter) = tempImage;
     
     counter = counter + 1;
 end
@@ -16,16 +23,22 @@ end
 Location2 = 'C:\Users\adamc\OneDrive\Desktop\Final Computer Vision Project\Computer-Vision-Final-Project\training_test_data\training_nonfaces\*jpg';
 ds2 = imageDatastore(Location2);
 length = 3047; %Number of pictures in training_faces
-nonfaces = zeros(100,100,length);
+nonfaces = zeros(100,100,100);
 counter = 1;
+
 while hasdata(ds2)
     tempImage = read(ds2);
+    tempImage = mat2gray(tempImage);
     tempImage = tempImage(1:100,1:100);
-    nonfaces(:,:,counter) = tempImage;
+    total_nonfacepics(:,:,counter) = tempImage;
+    %nonfaces(:,:,counter) = tempImage;
     
     counter = counter + 1;
 end
 
+%Get only the first 100 training pics of face and nonface
+faces(:,:,1:100) = total_facepics(:,:,1:100);
+nonfaces(:,:,1:100) = total_nonfacepics(:,:,1:100);
 
 
 % choosing a set of random weak classifiers
@@ -40,18 +53,18 @@ end
 % save classifiers1000 weak_classifiers
 
 %Get face_integrals
-face_integrals = zeros(100,100,3047);
+face_integrals = zeros(100,100,current_face_size);
 
-for i = 1:3047
-    %face_intergrals(:,:,i) = integral_image(faces(:,:,i));
-    face_intergrals(:,:,i) = integralImage(faces(:,:,i));
+for i = 1:current_face_size
+    face_integrals(:,:,i) = integral_image(faces(:,:,i));
+    
 end
 
 %Get nonface_integrals
-nonface_integrals = zeros(100,100,3047);
+nonface_integrals = zeros(100,100,current_nonface_size);
 
-for i = 1:3047
-    nonface_intergrals(:,:,i) = integral_image(faces(:,:,i));
+for i = 1:current_face_size
+    nonface_integrals(:,:,i) = integral_image(nonfaces(:,:,i));
      
 end
 
@@ -79,15 +92,15 @@ labels = zeros(example_number, 1);
 labels(1:size(faces, 3)) = 1;
 labels((size(faces, 3)+1):example_number) = -1;
 examples = zeros(face_vertical, face_horizontal, example_number);
-%examples (:, :, 1:size(faces, 3)) = face_integrals;
-%examples(:, :, (size(faces, 3)+1):example_number) = nonface_integrals;
+examples (:, :, 1:size(faces, 3)) = face_integrals;
+examples(:, :, (size(faces, 3)+1):example_number) = nonface_integrals;
 
 classifier_number = numel(weak_classifiers);
 
 responses =  zeros(classifier_number, example_number);
 
 for example = 1:example_number
-    integral = face_integrals(:, :, example);
+    integral = examples(:, :, example);
     for feature = 1:classifier_number
         classifier = weak_classifiers {feature};
         %eval_weak_classifier(classifier, integral);
@@ -112,5 +125,36 @@ boosted_classifier = AdaBoost(responses, labels, 15);
 prediction = boosted_predict(faces(:, :, 200), boosted_classifier, weak_classifiers, 15)
 
 prediction = boosted_predict(nonfaces(:, :, 500), boosted_classifier, weak_classifiers, 15)
+
+%Bootstraping Section
+
+%Detecting faces
+for j = 1:100
+    prediction = boosted_predict(faces(:, :, j), boosted_classifier, weak_classifiers, 15);
+    %if prediction is less than 0 add to training data
+    if prediction < 0
+        current_nonface_size = current_nonface_size + 1;
+        temp_matrix = zeros(100,100,current_nonface_size);
+        temp_matrix = nonfaces(:,:,1:current_nonface_size-1);
+        temp_matrix(:,:,current_nonface_size) = total_nonfacepics(:,:,k);
+        nonfaces = zeros(100,100,currnet_nonface_size);
+        nonfaces(:,:,1:current_nonface_size) = temp_matrix(:,:,current_nonface_size);
+    end
+end
+
+%Dectecting nonfaces
+for k = 101:201
+     prediction = boosted_predict(total_facepics(:, :, j), boosted_classifier, weak_classifiers, 15);
+    %if prediction is less than 0 add to training data
+    if prediction > 0
+        current_face_size = current_face_size + 1;
+        temp_matrix = zeros(100,100,current_face_size);
+        temp_matrix = faces(:,:,1:current_face_size-1);
+        temp_matrix(:,:,current_face_size) = total_facepics(:,:,k);
+        faces = zeros(100,100,currnet_face_size);
+        faces(:,:,1:current_face_size) = temp_matrix(:,:,current_face_size);
+    end
+end
+
 
 
