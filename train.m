@@ -1,4 +1,5 @@
 clear;
+clc;
 %Gettting training_faces into matrix
 Location = 'training_faces\*bmp';
 current_face_size = 100;
@@ -222,7 +223,7 @@ Wrong_Total = 0;
 for f = 1:current_face_size
     %tetsing faces
     Total_Pics = Total_Pics + 1;
-    result = cascade_classify(faces(:,:,f));
+    result = cascade_classify(faces(:,:,f), boosted_classifier,weak_classifiers);
     if result == 0
         Wrong_Total = Wrong_Total + 1;
     end
@@ -231,11 +232,11 @@ Wrong_Total
 Correct_Total = Total_Pics - Wrong_Total;
 Total_Pics = 0;
 Wrong_Total = 0;
-Correct_Percentage = Correct_Total / Total_Pics;
+Correct_Percentage = Correct_Total / Total_Pics
 for f = 1:current_nonface_size
      %testing nonfaces
       Total_Pics = Total_Pics + 1;
-    result = cascade_classify(nonfaces(:,:,f), boosted_classifier);
+    result = cascade_classify(nonfaces(:,:,f), boosted_classifier, weak_classifiers);
     if result == 1
         Wrong_Total = Wrong_Total + 1;
     end 
@@ -244,7 +245,10 @@ Wrong_Total
 Correct_Total = Total_Pics - Wrong_Total;
 Total_Pics = 0;
 Wrong_Total = 0;
-Correct_Percentage = Correct_Total / Total_Pics;
+Correct_Percentage = Correct_Total / Total_Pics
+
+save boosted_classifier
+save weak_classifiers
 
 
 

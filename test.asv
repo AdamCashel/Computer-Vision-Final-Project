@@ -1,0 +1,22 @@
+%%Script test.m runs the final face detector with the test image data and
+%%computes accuracy over that data
+
+
+%Read in test images into matrix
+%Gettting training_faces into matrix
+Location = 'test_cropped_faces\*bmp';
+ds = imageDatastore(Location);
+length = 5047; %Number of pictures in training_faces
+faces = zeros(50,50,100); %Matrix to hold current training face pics
+total_facepics = zeros(50,50,length); % Matrix to hold all training face pics 
+total_nonfacepics = zeros(50,50,length); % Matrix to hold all training nonface pics 
+counter = 1;
+
+while hasdata(ds)
+    tempImage = read(ds);
+    tempImage = mat2gray(tempImage);
+    total_facepics(:,:,counter) = tempImage;
+    %faces(:,:,counter) = tempImage;
+    
+    counter = counter + 1;
+end
