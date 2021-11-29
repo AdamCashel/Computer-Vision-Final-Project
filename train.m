@@ -1,6 +1,6 @@
 clear;
 %Gettting training_faces into matrix
-Location = 'C:\Users\adamc\OneDrive\Desktop\Final Computer Vision Project\Computer-Vision-Final-Project\training_test_data\training_faces\*bmp';
+Location = 'training_faces\*bmp';
 current_face_size = 100;
 current_nonface_size = 100;
 ds = imageDatastore(Location);
@@ -21,7 +21,7 @@ while hasdata(ds)
 end
 
 %Gettting training_nonfaces into matrix
-Location2 = 'C:\Users\adamc\OneDrive\Desktop\Final Computer Vision Project\Computer-Vision-Final-Project\training_test_data\training_nonfaces\*jpg';
+Location2 = 'training_nonfaces\*jpg';
 ds2 = imageDatastore(Location2);
 length = 5047; %Number of pictures in training_faces
 nonfaces = zeros(50,50,100);
@@ -133,8 +133,8 @@ prediction = boosted_predict(total_nonfacepics(:, :, 500), boosted_classifier, w
 %Detecting nonfaces
 numberpics = 0;
 wrong = 0;
-for u = 1:8
-for j = (u*100)+1:(u*100)+100
+
+for j = (100)+1:3047
     prediction = boosted_predict(total_nonfacepics(:,:,j), boosted_classifier, weak_classifiers, 50);
     numberpics = numberpics + 1;
     %if prediction is less than 0 add to training data
@@ -156,14 +156,18 @@ for j = (u*100)+1:(u*100)+100
         wrong = wrong + 1;
     end
 end
-end
+
+
+wrong
+correct = numberpics - wrong
 
 %Dectecting faces
-%Add threshold other than 1
-%Number of rounds
+%Add threshold other than 0
 
-for r = 1:8
-for k = (r*100)+1:(r*100)+100
+numberpics = 0;
+wrong = 0;
+
+for k = (100)+1:3047
      prediction = boosted_predict(total_facepics(:,:,k), boosted_classifier, weak_classifiers, 50);
      numberpics = numberpics + 1;
     %if prediction is less than 0 add to training data
@@ -185,7 +189,7 @@ for k = (r*100)+1:(r*100)+100
         wrong = wrong + 1;
     end
 end
-end
+
 
 
 wrong
@@ -210,7 +214,7 @@ figure(3); imshow(max((result > 4) * 255, photo2 * 0.5), [])
 
 
 %Classifier Cascades
-%Result is either a face or not a face
+%Result is either a face or not a face for a window of an image
 %If result = 1 -> predicted face pic, If result = 0 -> predicted nonface
 %pic
 Total_Pics = 0;

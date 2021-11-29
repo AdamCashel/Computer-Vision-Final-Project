@@ -133,8 +133,8 @@ prediction = boosted_predict(total_nonfacepics(:, :, 500), boosted_classifier, w
 %Detecting nonfaces
 numberpics = 0;
 wrong = 0;
-for u = 1:8
-for j = (u*100)+1:(u*100)+100
+
+for j = (100)+1:3047
     prediction = boosted_predict(total_nonfacepics(:,:,j), boosted_classifier, weak_classifiers, 50);
     numberpics = numberpics + 1;
     %if prediction is less than 0 add to training data
@@ -156,14 +156,18 @@ for j = (u*100)+1:(u*100)+100
         wrong = wrong + 1;
     end
 end
-end
+
+
+wrong
+correct = numberpics - wrong
 
 %Dectecting faces
-%Add threshold other than 1
-%Number of rounds
+%Add threshold other than 0
 
-for r = 1:8
-for k = (r*100)+1:(r*100)+100
+numberpics = 0;
+wrong = 0;
+
+for k = (100)+1:3047
      prediction = boosted_predict(total_facepics(:,:,k), boosted_classifier, weak_classifiers, 50);
      numberpics = numberpics + 1;
     %if prediction is less than 0 add to training data
@@ -185,7 +189,7 @@ for k = (r*100)+1:(r*100)+100
         wrong = wrong + 1;
     end
 end
-end
+
 
 
 wrong
