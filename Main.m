@@ -112,7 +112,8 @@ end
 
 % save training1000 responses labels classifier_number example_number
 
-%Calling adaboost to find error rates of 25 strong classifiers
+%Calling adaboost to find error rate of strong classifier with 50 rounds of
+%training
 boosted_classifier = AdaBoost(responses, labels, 50)
 
 
@@ -130,9 +131,12 @@ prediction = boosted_predict(total_nonfacepics(:, :, 500), boosted_classifier, w
 %Bootstraping Section
 
 %Detecting nonfaces
+numberpics = 0;
 wrong = 0;
-for j = 101:201
+for u = 1:8
+for j = (u*100)+1:(u*100)+100
     prediction = boosted_predict(total_nonfacepics(:,:,j), boosted_classifier, weak_classifiers, 50);
+    numberpics = numberpics + 1;
     %if prediction is less than 0 add to training data
     if prediction > 0
         current_nonface_size = current_nonface_size + 1;
@@ -152,11 +156,16 @@ for j = 101:201
         wrong = wrong + 1;
     end
 end
+end
 
 %Dectecting faces
 %Add threshold other than 1
-for k = 101:201
+%Number of rounds
+
+for r = 1:8
+for k = (r*100)+1:(r*100)+100
      prediction = boosted_predict(total_facepics(:,:,k), boosted_classifier, weak_classifiers, 50);
+     numberpics = numberpics + 1;
     %if prediction is less than 0 add to training data
     if prediction < 0
         current_face_size = current_face_size + 1;
@@ -176,9 +185,11 @@ for k = 101:201
         wrong = wrong + 1;
     end
 end
+end
+
 
 wrong
-correct = 200 - wrong
+correct = numberpics - wrong
 
 
 
@@ -195,4 +206,20 @@ tic; result = boosted_multiscale_search(photo2, 1, boosted_classifier, weak_clas
 tic; [result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [50, 50], 2); toc
 figure(2); imshow(result, []);
 figure(3); imshow(max((result > 4) * 255, photo2 * 0.5), [])
+
+
+
+%Classifier Cascades
+%Result is either a face or not a face
+
+for f = 1:current_face_size
+    %result = cascade_classify();
+end
+
+
+
+
+
+
+
 
