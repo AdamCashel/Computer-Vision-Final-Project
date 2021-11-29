@@ -3,8 +3,12 @@ function result = cascade_classify(window)
 K = 60;
 
 for i = 1:K-1
-    apply_classifier
-
+    
+ 
+   prediction = boosted_predict(total_facepics(:,:,k), boosted_classifier, weak_classifiers, 50);
+   if prediction < .3
+       return result = 0;
+   end
 
 
 end

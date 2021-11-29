@@ -203,7 +203,7 @@ photo2 = imrotate(photo, -10, 'bilinear');
 photo2 = imresize(photo2, 0.34, 'bilinear');
 figure(1); imshow(photo2, []);
 tic; result = boosted_multiscale_search(photo2, 1, boosted_classifier, weak_classifiers, [50, 50]); toc
-tic; [result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [50, 50], 2); toc
+tic; [result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [50, 50], 4); toc
 figure(2); imshow(result, []);
 figure(3); imshow(max((result > 4) * 255, photo2 * 0.5), [])
 
@@ -211,17 +211,36 @@ figure(3); imshow(max((result > 4) * 255, photo2 * 0.5), [])
 
 %Classifier Cascades
 %Result is either a face or not a face
-
+%If result = 1 -> predicted face pic, If result = 0 -> predicted nonface
+%pic
+Total_Pics = 0;
+Wrong_Total = 0;
 for f = 1:current_face_size
+    %tetsing faces
+    Total_Pics = Total_Pics + 1;
     result = cascade_classify(faces(:,:,f));
-    if result > 0
-        
+    if result == 0
+        Wrong_Total = Wrong_Total + 1;
     end
 end
-
+Wrong_Total
+Correct_Total = Total_Pics - Wrong_Total;
+Total_Pics = 0;
+Wrong_Total = 0;
+Correct_Percentage = Correct_Total / Total_Pics;
 for f = 1:current_nonface_size
-    
-
+     %testing nonfaces
+      Total_Pics = Total_Pics + 1;
+    result = cascade_classify(nonfaces(:,:,f), boosted_classifier);
+    if result == 1
+        Wrong_Total = Wrong_Total + 1;
+    end 
+end
+Wrong_Total
+Correct_Total = Total_Pics - Wrong_Total;
+Total_Pics = 0;
+Wrong_Total = 0;
+Correct_Percentage = Correct_Total / Total_Pics;
 
 
 
