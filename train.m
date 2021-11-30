@@ -1,5 +1,4 @@
-clear;
-clc;
+
 directory;
 userpath(code_directory);
 %Gettting training_faces into matrix
@@ -119,6 +118,36 @@ end
 %Calling adaboost to find error rate of strong classifier with 35 rounds of
 %training
 boosted_classifier = AdaBoost(responses, labels, 35)
+Total = 0;
+Correct_Ada = 0;
+Wrong_Ada = 0;
+for j = 1:3547
+    prediction = boosted_predict(total_nonfacepics(:,:,j), boosted_classifier, weak_classifiers, 35);
+    Total = Total + 1;
+    
+    if prediction > 3
+        Wrong_Ada = Wrong_Ada + 1;
+    else
+        Correct_Ada = Correct_Ada + 1;
+    end
+    
+    prediction = boosted_predict(total_facepics(:,:,j), boosted_classifier, weak_classifiers, 35);
+    Total = Total + 1;
+    
+    if prediction < 3
+        Wrong_Ada = Wrong_Ada + 1;
+    else
+        Correct_Ada = Correct_Ada + 1;
+    end
+    
+end
+
+Correct_Ada_Percentage = (Correct_Ada / Total) * 100
+
+
+
+
+
 
 
 %Bootstraping Section
@@ -189,23 +218,6 @@ end
 wrong
 correct = numberpics - wrong
 Correct_Percentage_Bootstrapping_NonFaces = (correct / numberpics) * 100
-
-
-
-photo = read_gray('faces4.bmp');
-
-% rotate the photograph to make faces more upright (we 
-% are cheating a bit, to save time compared to searching
-% over multiple rotations).
-photo2 = imrotate(photo, -10, 'bilinear');
-photo2 = imresize(photo2, 0.34, 'bilinear');
-figure(1); imshow(photo2, []);
-tic; result = boosted_multiscale_search(photo2, 1, boosted_classifier, weak_classifiers, [35, 35]); toc
-figure(2); imshow(result, []);
-tic; [result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [35, 35], 10); toc
-figure(3); imshow(result, []);
-figure(4); imshow(max((result > 4) * 255, photo2 * 0.5), [])
-
 
 
 %Classifier Cascades
