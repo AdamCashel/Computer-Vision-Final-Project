@@ -1,22 +1,83 @@
 %%Script test.m runs the final face detector with the test image data and
 %%computes accuracy over that data
+load boosted_classifier
+load weak_classifiers
 
+False_Positives = 0;
+Total_Pics = 0;
+False_Negatives = 0;
+Correct = 0;
+face_size = [50 50];
 
-%Read in test images into matrix
-%Gettting training_faces into matrix
-Location = 'test_cropped_faces\*bmp';
+Location = 'test_face_photos\*jpg';
 ds = imageDatastore(Location);
-length = 5047; %Number of pictures in training_faces
-faces = zeros(50,50,100); %Matrix to hold current training face pics
-total_facepics = zeros(50,50,length); % Matrix to hold all training face pics 
-total_nonfacepics = zeros(50,50,length); % Matrix to hold all training nonface pics 
 counter = 1;
 
 while hasdata(ds)
     tempImage = read(ds);
-    tempImage = mat2gray(tempImage);
-    total_facepics(:,:,counter) = tempImage;
-    %faces(:,:,counter) = tempImage;
-    
-    counter = counter + 1;
+    tempImage = rgb2gray(tempImage);
+    Total_Pics = Total_Pics + 1;
+    %[result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [50, 50], 4);
+    %prediction = boosted_predict(tempImage, boosted_classifier, weak_classifiers, 50);
+    %[max_responses, max_scales] = boosted_multiscale_search(tempImage, 1, boosted_classifier, weak_classifiers, face_size);
+    result = apply_classifier_aux(tempImage, boosted_classifier, weak_classifiers, face_size);
+                                       
+    prediction = max(result(:));
+    if prediction > .3
+        Correct = Correct + 1;
+    else
+        False_Negatives = False_Negatives + 1;
+    end
 end
+
+
+Location = 'test_nonfaces\*jpg';
+ds = imageDatastore(Location);
+counter = 1;
+
+while hasdata(ds)
+    tempImage = read(ds);
+    tempImage = rgb2gray(tempImage);
+    Total_Pics = Total_Pics + 1;
+    %[result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [50, 50], 4);
+    %prediction = boosted_predict(tempImage, boosted_classifier, weak_classifiers, 50);
+    %[max_responses, max_scales] = boosted_multiscale_search(tempImage, 1, boosted_classifier, weak_classifiers, face_size);
+    result = apply_classifier_aux(tempImage, boosted_classifier, weak_classifiers, face_size);
+                                       
+    prediction = max(result(:));
+    if prediction >= 0
+        Correct = Correct + 1;
+    else
+        False_Negatives = False_Negatives + 1;
+    end
+end
+
+
+
+L
+Location = 'test_nonfaces\*jpg';
+ds = imageDatastore(Location);
+counter = 1;
+
+while hasdata(ds)
+    tempImage = read(ds);
+    tempImage = rgb2gray(tempImage);
+    Total_Pics = Total_Pics + 1;
+    %[result, boxes] = boosted_detector_demo(photo2, 1, boosted_classifier, weak_classifiers, [50, 50], 4);
+    %prediction = boosted_predict(tempImage, boosted_classifier, weak_classifiers, 50);
+    %[max_responses, max_scales] = boosted_multiscale_search(tempImage, 1, boosted_classifier, weak_classifiers, face_size);
+    result = SearchForFace(tempImage, boosted_classifier, weak_classifiers, face_size);
+                                       
+    prediction = max(result(:))
+    if prediction >= 0
+        Correct = Correct + 1;
+    else
+        False_Negatives = False_Negatives + 1;
+    end
+end
+
+
+Total_Pics
+
+
+
